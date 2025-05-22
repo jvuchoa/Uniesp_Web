@@ -1,0 +1,41 @@
+services:
+  mongo:
+    image: mongo
+    container_name: uniesp-mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    networks:  # ✅ Adicionado
+      - uniesp-network
+
+  backend:
+    build: ./backend
+    container_name: uniesp-backend
+    restart: always
+    ports:
+      - "5000:5000"
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - mongo
+    networks:
+      - uniesp-network
+
+  frontend:
+    build: ./frontend
+    container_name: uniesp-frontend
+    restart: always
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    networks:
+      - uniesp-network
+
+volumes:
+  mongo-data:
+
+networks:
+  uniesp-network:
